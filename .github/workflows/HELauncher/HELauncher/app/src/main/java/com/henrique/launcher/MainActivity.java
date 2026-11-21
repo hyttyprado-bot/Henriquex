@@ -146,18 +146,22 @@ public class MainActivity extends Activity {
         View traco = new View(this);
         traco.setBackgroundColor(ACCENT);
 
-        left.addView(hora);
-        left.addView(data);
-        LinearLayout.LayoutParams bemParams = wrap();
-        bemParams.topMargin = dp(18);
-        left.addView(bemVindo, bemParams);
-        left.addView(nome);
+        TextView[] textos = {hora, data, bemVindo, nome};
+        for (TextView t : textos) {
+            t.setSingleLine(true);
+            t.setEllipsize(TextUtils.TruncateAt.END);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (t == bemVindo) lp.topMargin = dp(18);
+            left.addView(t, lp);
+        }
         LinearLayout.LayoutParams tracoParams = new LinearLayout.LayoutParams(dp(56), dp(3));
         tracoParams.topMargin = dp(6);
         left.addView(traco, tracoParams);
 
+        int larguraTela = getResources().getDisplayMetrics().widthPixels;
         FrameLayout.LayoutParams leftParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Math.min(dp(600), larguraTela / 2), ViewGroup.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP | Gravity.START);
         leftParams.leftMargin = dp(40);
         leftParams.topMargin = dp(22);
