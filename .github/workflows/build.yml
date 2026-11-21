@@ -7,9 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: HELauncher/HELauncher
     steps:
       - uses: actions/checkout@v4
 
@@ -23,9 +20,21 @@ jobs:
           gradle-version: '8.9'
 
       - name: Gerar o app
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: |
+          ARQ=$(find . -name settings.gradle | head -n 1)
+          if [ -z "$ARQ" ]; then
+            echo "settings.gradle NAO ENCONTRADO. Arquivos no repositorio:"
+            find . -maxdepth 4 -not -path './.git*'
+            exit 1
+          fi
+          DIR=$(dirname "$ARQ")
+          echo "Projeto encontrado em: $DIR"
+          cd "$DIR"
+          gradle assembleDebug --no-daemon --stacktrace
+          mkdir -p "$GITHUB_WORKSPACE/saida"
+          cp app/build/outputs/apk/debug/app-debug.apk "$GITHUB_WORKSPACE/saida/"
 
       - uses: actions/upload-artifact@v4
         with:
           name: HELauncher-apk
-          path: HELauncher/HELauncher/app/build/outputs/apk/debug/app-debug.apk
+          path: saida/app-debug.apk
